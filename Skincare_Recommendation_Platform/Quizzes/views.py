@@ -3,9 +3,11 @@ from .models import QuizResults, Question
 from django.core.exceptions import ValidationError
 from django.contrib import messages
 from .forms import QuizForm
+from django.contrib.auth.decorators import login_required
 
 from .models import Question
 # Create your views here.
+@login_required
 def QuizPage(request):
     questions = Question.objects.all().order_by('order')
     answers = {}

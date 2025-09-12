@@ -61,7 +61,6 @@ class InteractionTypeChoices(models.TextChoices):
 
     VIEW = 'view', 'View'
     LIKE = 'like', 'Like'
-    WISHLIST = 'wishlist', 'Wishlist'
     CART = 'cart', 'Cart'
 
 class SeasonChoices(models.TextChoices):

@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import redirect, render, get_object_or_404
 from statistics import mean
 from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
 from django.db.models import Q, TextField, Case, When
@@ -71,25 +71,22 @@ def score_products(user, limit=10):
             concern_matches = set(quiz.concerns) & set(product.concerns_targeted)
             score += 2 * len(concern_matches)
 
-            preference_matches = set(quiz.preferences) & set(product.ingredients)
-            score += 1 * len(preference_matches)
-
-            if(quiz.eye_concern != "no_eye_concern" and "eye" in product.category.lower()):
+            if(quiz.eye_concern != "no_eye_concern" and "eye" in product.name.lower()):
                 score += 2
 
             score += product.rating_avg
 
             if(score > 0):
-                scores[product.id] += score
+                scores[product.id] += score # type: ignore
 
     browsed = Browsing_History.objects.filter(user=user)
     purchased = Purchase_History.objects.filter(user=user)
 
     for entry in browsed:
-        scores[entry.product.id] += INTERACTION_WEIGHTS.get(entry.interaction_type, 0)
+        scores[entry.product.id] += INTERACTION_WEIGHTS.get(entry.interaction_type, 0) # type: ignore
 
     for entry in purchased:
-        scores[entry.product.id] += INTERACTION_WEIGHTS["purchase"] * entry.quantity
+        scores[entry.product.id] += INTERACTION_WEIGHTS["purchase"] * entry.quantity # type: ignore
 
     if(scores):
         sorted_products = sorted(scores.items(), key=lambda x: x[1], reverse=True)
@@ -138,7 +135,10 @@ def SearchPage(request):
                     Q(tags__icontains=query)
                 )
         else:
-            products = score_products(request.user, limit=10)
+            if(request.user.is_authenticated):
+                products = score_products(request.user, limit=10)
+            else:
+                return redirect('login_page')
 
 
     elif(request.method == 'GET'):
