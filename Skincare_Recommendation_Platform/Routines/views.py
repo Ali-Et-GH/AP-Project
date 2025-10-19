@@ -50,7 +50,7 @@ def routine_generator_view(request):
         steps.append({
             'order': step,
             'description': 'Use a foaming cleanser to control oil',
-            'product_name': cleanser_name.name
+            'product_name': cleanser_name.name  # type: ignore
         })
         step+=1
     elif skin_type == 'Dry':
@@ -70,7 +70,7 @@ def routine_generator_view(request):
             steps.append({
                 'order': step,
                 'description': 'Use a cream cleanser for hydration',
-                'product_name': cleanser_name.name
+                'product_name': cleanser_name.name # type: ignore
             })
         step+=1
     else:
@@ -170,7 +170,7 @@ def routine_generator_view(request):
             })
 
     plan, _ = RoutinePlan.objects.get_or_create(user=user, name=routine_name)
-    plan.routine_steps.all().delete()
+    plan.routine_steps.all().delete() # type: ignore
 
     for step in steps:
         try:
@@ -192,4 +192,4 @@ def routine_generator_view(request):
                 product_name=step['product_name']
             )
 
-    return render(request, 'Routines/routine_page.html', {'routine_plan': plan, 'routine_steps': list(plan.routine_steps.all())})
+    return render(request, 'Routines/routine_page.html', {'routine_plan': plan, 'routine_steps': list(plan.routine_steps.all())}) # type: ignore
